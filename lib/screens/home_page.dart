@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:to_do/widgets/add_task_widget.dart';
 
 import '../providers/tasks_provider.dart';
+import '../widgets/task_item.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -11,6 +13,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final _addTaskWidget = AddTaskWidget();
   @override
   void initState() {
     // TODO: implement initState
@@ -33,7 +36,8 @@ class _HomePageState extends State<HomePage> {
             automaticallyImplyLeading: false,
             title: const Text('ToDo'),
             bottom: AppBar(
-              toolbarHeight: 70,
+              elevation: 0,
+              toolbarHeight: 60,
               automaticallyImplyLeading: false,
               title: Consumer<TasksProvider>(
                 builder: (BuildContext context, value, Widget? child) {
@@ -51,17 +55,47 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           ),
+          Consumer<TasksProvider>(
+            builder: (BuildContext context, value, Widget? child) {
+              if (value.tasks.isEmpty) {
+                return const SliverToBoxAdapter(
+                  child: SizedBox(),
+                );
+              } else {
+                return SliverPadding(
+                  padding: const EdgeInsets.only(
+                    top: 15,
+                    bottom: 70,
+                  ),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: TaskItem(
+                            data: value.tasks[index],
+                            index: index,
+                          ),
+                        );
+                      },
+                      childCount: value.tasks.length,
+                    ),
+                  ),
+                );
+              }
+            },
+          ),
         ],
       ),
-      // body: Consumer<TasksProvider>(builder: (BuildContext context, value, Widget? child) {
-      //   if(value.tasks.isEmpty) {
-      //     return const Center(
-      //       child: Text('No Tasks'),
-      //     );
-      //   } else {
-      //     return Text('');
-      //   }
-      // },),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.add),
+        onPressed: () {
+          _addTaskWidget.bottomSheet(
+            context: context,
+            title: '',
+          );
+        },
+      ),
     );
   }
 }

@@ -19,10 +19,10 @@ class TasksProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> updateTask(int index,TaskModel task) async {
+  Future<void> updateTask(int index, TaskModel task) async {
     var box = await Hive.openBox<TaskModel>('tasksBox');
     bool taskExists = box.containsKey(task.savedDate);
-    if(taskExists) {
+    if (taskExists) {
       await box.putAt(index, task);
       _tasks = box.values.toList();
       notifyListeners();
@@ -31,12 +31,11 @@ class TasksProvider extends ChangeNotifier {
       _tasks = box.values.toList();
       notifyListeners();
     }
-
   }
 
-  Future<void> removeTask(TaskModel task) async {
+  Future<void> removeTask(String objectKey) async {
     var box = await Hive.openBox<TaskModel>('tasksBox');
-    await box.delete('${task.savedDate}');
+    await box.delete(objectKey);
     _tasks = box.values.toList();
     notifyListeners();
   }
